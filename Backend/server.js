@@ -15,7 +15,6 @@ app.use(cookieParser());
 
 
 app.use("/api/users", UserRoutes);
-
 app.use("/api/blogs", BlogsRoutes);
 
 app.get("/", (req, res) => {
