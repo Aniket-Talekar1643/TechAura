@@ -9,7 +9,7 @@ export default function Tasks({ projectId, setPage }) {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
 
-  // 🔥 VERY IMPORTANT GUARD
+
   useEffect(() => {
     if (!projectId) return;
 

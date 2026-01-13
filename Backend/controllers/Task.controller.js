@@ -1,10 +1,7 @@
 import Task from "../models/Task.models.js";
 import Project from "../models/project.models.js";
 
-/**
- * CREATE TASK
- * POST /api/projects/:projectId/tasks
- */
+
 export const createTask = async (req, res) => {
     try {
         const { title, description, status, priority } = req.body;
@@ -38,10 +35,7 @@ export const createTask = async (req, res) => {
     }
 };
 
-/**
- * GET TASKS BY PROJECT
- * GET /api/projects/:projectId/tasks
- */
+
 export const getTasksByProject = async (req, res) => {
     try {
         const { projectId } = req.params;
@@ -58,10 +52,7 @@ export const getTasksByProject = async (req, res) => {
     }
 };
 
-/**
- * UPDATE TASK
- * PUT /api/tasks/:taskId
- */
+
 export const updateTask = async (req, res) => {
     try {
         const { taskId } = req.params;
@@ -93,10 +84,7 @@ export const updateTask = async (req, res) => {
     }
 };
 
-/**
- * DELETE TASK
- * DELETE /api/tasks/:taskId
- */
+
 export const deleteTask = async (req, res) => {
     try {
         const { taskId } = req.params;

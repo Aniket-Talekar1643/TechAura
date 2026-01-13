@@ -61,15 +61,15 @@ export const RegisterUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // ✅ DO NOT hash here (model will handle it)
+        
         const newUser = new User({
             username,
             email,
-            password, // 🔥 plain password
+            password, // 
             role,
         });
 
-        await newUser.save(); // 🔐 pre-save hook hashes password
+        await newUser.save(); 
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
@@ -106,10 +106,10 @@ export const LoginUser = async (req, res) => {
         const { accessToken, refreshToken } =
             await generateAccessAndRefreshToken(user._id);
 
-        // cookie options (LOCALHOST SAFE)
+        
         const options = {
             httpOnly: true,
-            secure: false,       // ❗ localhost
+            secure: false,       
             sameSite: "lax",
         };
 
