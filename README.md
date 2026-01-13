@@ -132,3 +132,20 @@ This was fixed by:
 - Better error handling
 
 ---
+
+
+
+
+//env
+PORT=5000
+MONGODB_URL=mongodb://localhost:27017/TechAura
+
+ACCESS_TOKEN_SECRET=blogs-website 
+ACCESS_TOKEN_EXPIRY=1d
+
+REFRESH_TOKEN_SECRET=blogs-website-backend
+REFRESH_TOKEN_EXPIRY=10d
+
+CLOUDINARY_CLOUD_NAME=dywg7uscm
+CLOUDINARY_API_KEY=125682687469793
+CLOUDINARY_API_SECRET=y1e_VNQQrbZFy8SPUorgNfSE-8o
