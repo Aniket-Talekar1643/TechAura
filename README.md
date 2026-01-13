@@ -1,6 +1,7 @@
 # Project & Task Management App
 
 A simple **MERN Stack Project & Task Management application** where users can:
+
 - Login / Register
 - Create projects
 - Automatically move to tasks after project creation
@@ -19,7 +20,6 @@ A simple **MERN Stack Project & Task Management application** where users can:
 ---
 
 ## Folder Structure
-
 
 ---
 
@@ -48,19 +48,17 @@ To prevent errors, the Tasks page is **guarded** so it never loads with a `null`
 ## API Endpoints
 
 ### Project APIs
+
 GET /api/projects
 POST /api/projects
 PUT /api/projects/:id
 DELETE /api/projects/:id
 
-
 ### Task APIs
-
 
 GET /api/projects/:projectId/tasks
 POST /api/projects/:projectId/tasks
 DELETE /api/tasks/:taskId
-
 
 ---
 
@@ -68,37 +66,29 @@ DELETE /api/tasks/:taskId
 
 ### 1. Start MongoDB
 
-
 mongod
-
 
 ### 2. Start Backend
 
-
 cd backend
 npm install
-npm start
-
+nodemon server.js
 
 Server runs on:
 
-
 http://localhost:5000
 
+npm run dev
 
 ### 3. Start Frontend
 
-
 cd frontend
 npm install
-npm start
-
+npm run dev
 
 Frontend runs on:
 
-
 http://localhost:3000
-
 
 ---
 
@@ -118,6 +108,7 @@ http://localhost:3000
 Previously, the Tasks page crashed because it loaded before `projectId` was set.
 
 This was fixed by:
+
 - Guarding the Tasks page
 - Preventing API calls when `projectId` is null
 
@@ -133,14 +124,11 @@ This was fixed by:
 
 ---
 
-
-
-
 //env
 PORT=5000
 MONGODB_URL=mongodb://localhost:27017/TechAura
 
-ACCESS_TOKEN_SECRET=blogs-website 
+ACCESS_TOKEN_SECRET=blogs-website
 ACCESS_TOKEN_EXPIRY=1d
 
 REFRESH_TOKEN_SECRET=blogs-website-backend
