@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const BlogsSchema = new mongoose.Schema({
+const ProjectSchema = new mongoose.Schema({
 
     title: {
         type: String,
@@ -13,29 +13,20 @@ const BlogsSchema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-    content: {
+    description: {
         type: String,
         required: true
     },
-    thumbnail: {
-        type: String,
-        default: ""
-    },
-    category: {
-        type: String,
-        default: "General"
-
-    },
+   
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-
 },
     { timestamps: true }
 );
 
- const Blog = mongoose.model("Blog", BlogsSchema);
+const Project = mongoose.model("Project", ProjectSchema);
 
- export default Blog;
+export default Project;

@@ -26,13 +26,13 @@ export const generateAccessAndRefreshToken = async (userId) => {
 }
 export const RegisterUser = async (req, res) => {
     try {
-        const { username, email, password, about } = req.body;
-
-        // console.log(username, email, about, password);
+        const { username, email, password, role } = req.body;
 
         // username validation
         if (!username || username.length < 3) {
-            return res.status(400).json({ message: "Username must be at least 3 characters" });
+            return res
+                .status(400)
+                .json({ message: "Username must be at least 3 characters" });
         }
 
         // email validation
@@ -45,13 +45,14 @@ export const RegisterUser = async (req, res) => {
         const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$/;
         if (!password || !passwordRegex.test(password)) {
             return res.status(400).json({
-                message: "Password must be 6+ chars, include 1 number & 1 special character"
+                message:
+                    "Password must be 6+ chars, include 1 number & 1 special character",
             });
         }
 
-        // about validation
-        if (!about) {
-            return res.status(400).json({ message: "About must" });
+        // role validation
+        if (!role) {
+            return res.status(400).json({ message: "Role is required" });
         }
 
         // check user exists
@@ -60,69 +61,76 @@ export const RegisterUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // hash password
-        const hashPassword = await bcrypt.hash(password, 10);
-        // console.log(hashPassword)
-        // create new user
+        // ✅ DO NOT hash here (model will handle it)
         const newUser = new User({
             username,
             email,
-            password: hashPassword,
-            about
+            password, // 🔥 plain password
+            role,
         });
 
-        await newUser.save();
-        res.status(201).json({ message: "User registered successfully" });
+        await newUser.save(); // 🔐 pre-save hook hashes password
 
+        res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
-        res.status(500).json({ message: "Registration Failed", error: err.message });
+        console.error(err);
+        res
+            .status(500)
+            .json({ message: "Registration Failed", error: err.message });
     }
 };
+
 
 export const LoginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // validation
         if (!email || !password) {
             return res.status(400).json({ message: "Email and Password Required" });
         }
 
-        // check user exists
-        const userExit = await User.findOne({ email });
-        if (!userExit) {
+        // find user
+        const user = await User.findOne({ email });
+        if (!user) {
             return res.status(400).json({ message: "User not Found" });
         }
 
         // compare password
-        const isPasswordCorrect = await bcrypt.compare(password, userExit.password);
-        if (!isPasswordCorrect) {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.status(400).json({ message: "Invalid Password" });
         }
-        //generating tokens here for that user
-        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(userExit._id);
 
+        // generate tokens
+        const { accessToken, refreshToken } =
+            await generateAccessAndRefreshToken(user._id);
+
+        // cookie options (LOCALHOST SAFE)
         const options = {
             httpOnly: true,
-            secure: true
-        }
+            secure: false,       // ❗ localhost
+            sameSite: "lax",
+        };
 
-
-        // success response
-        return res.status(200)
+        return res
+            .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json({
                 message: "Login Successful",
                 user: {
-                    id: userExit._id,
-                    username: userExit.username,
-                    email: userExit.email,
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
                 },
             });
-
-
     } catch (err) {
-        res.status(500).json({ message: "Login Failed", error: err.message });
+        console.error(err);
+        res.status(500).json({
+            message: "Login Failed",
+            error: err.message,
+        });
     }
 };
 
@@ -153,77 +161,3 @@ export const logout = async (req, res) => {
     }
 }
 
-export const profile = async (req, res) => {
-    try {
-        const user = req.user._id;
-        //console.log("user",user);
-        const ExitUser = await User.findById(user._id);
-
-        if (!ExitUser) {
-            return res.status(400).json({ message: "User not found" });
-        }
-        // console.log(ExitUser);
-
-        return res.status(200).json({
-            message: "profile fetched succssfully",
-            user: {
-                id: ExitUser._id,
-                email: ExitUser.email,
-                username: ExitUser.username,
-                about: ExitUser.about,
-                createdDate: ExitUser.createAt
-            }
-
-        })
-
-    } catch (err) {
-        return res.status(400).json({ message: "failed to fetch profile" })
-    }
-}
-
-export const updateProfile = async (req, res) => {
-    try {
-        const { username, email, about } = req.body;
-
-        //take provided feild 
-        const updateData = {};
-        if (username) updateData.username = username;
-        if (email) updateData.email = email;
-        if (about) updateData.about = about;
-
-        // cheack user provide or not update for feild
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: "No field provided to update" })
-        }
-
-        //check also new also have unique mail id 
-        if (email) {
-            const UserExit = await User.findOne({ email })
-
-            if (UserExit) {
-                return res.ststus(200).json({ message: "Email already in use" })
-            }
-        }
-        //check also new also have unique mail id 
-        if (username) {
-            const UserExit = await User.findOne({ username })
-
-            if (UserExit) {
-                return res.ststus(200).json({ message: "username already in use" })
-            }
-        }
-        const updateUser = await User.findByIdAndUpdate(
-            req.user._id,
-            {
-                $set: updateData
-            },
-            {
-                new: true
-            }
-        )
-        return res.status(200).json({ message: "Profile updated Successfully" })
-    }
-    catch (err) {
-        return res.status(400).json({ message: "failed to update" })
-    }
-}
