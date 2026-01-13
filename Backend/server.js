@@ -23,8 +23,8 @@ app.use(
 );
 
 app.use("/api/users", UserRoutes);
-app.use("/api/project", ProjectRoutes);
-app.use("/api",TaskRoutes)
+app.use("/api/projects", ProjectRoutes);
+app.use("/api", TaskRoutes)
 
 app.get("/", (req, res) => {
   res.json("Api working fine");
